@@ -1,0 +1,99 @@
+@startuml
+skinparam monochrome true
+autonumber "<b>(<u>##</u>)"
+
+participant "Experiment Manager" as EM
+participant "SdnResource Manager" as SM
+
+actor User as U
+
+participant "SDN-Proxy-OSDNC" as p1
+participant "SDN-Proxy-ODL" as p2
+
+participant "OpenSDNcore" as OSDNC
+participant "OpenDayLight" as ODL
+
+
+||20||
+
+group Register User
+
+EM <-[ : Register User
+activate EM
+EM -> SM : create user info
+activate SM
+SM --> EM : response
+deactivate SM
+EM -->[ 
+deactivate EM
+
+end
+
+||30||
+
+group Provide Resources
+
+EM <-[ : ...
+activate EM
+EM -> SM
+activate SM
+SM -> p1 : /SDNproxySetup (token,tenant-id)
+activate p1
+activate OSDNC
+
+SM -> p2 : /SDNproxySetup (token,tenant-id)
+activate ODL
+activate p2
+
+p1 --> SM : (API-URL, user-flow-tables)
+deactivate p1
+p2 --> SM : (user-flow-tables, ??)
+deactivate p2
+SM --> EM
+deactivate SM
+
+EM -> U : (token, API-URL, user-flow-tables)
+end
+||10||
+deactivate EM
+
+||20||
+
+group SDN usage
+U -> p1 : POST /api (token, JSON-RPC(flow-table))
+activate p1
+p1 -> OSDNC: POST / (JSON-RCP(flow-table))
+
+OSDNC --> p1
+p1 --> U : result
+deactivate p1
+end
+||10||
+
+group Release Resources
+
+EM <-[
+activate EM
+EM -> SM : Delete Resources
+activate SM
+
+SM -> p1 : DELETE /SDNproxy/<token>
+activate p1
+
+SM -> p2 : DELETE /SDNproxy/<token>
+activate p2
+
+p1 --> SM
+deactivate p1
+deactivate OSDNC
+
+p2 --> SM
+deactivate p2
+deactivate ODL
+
+SM --> EM
+deactivate SM
+end
+||10||
+deactivate EM
+@enduml
