@@ -1,0 +1,52 @@
+@startuml
+
+skinparam monochrome true
+skinparam componentStyle uml2
+
+Actor Experimenter as U
+() "TOSCA" as rest
+
+() "NFV API" as napi
+() "Vim\ndriver" as vim
+
+package "SoftFIRE Middleware" {
+  Component [Experiment\nManager] as EM
+  Component SdnManager as SdMa
+  Component SecurityManager as SecMa
+  Component MonitoringManager as MoMa
+  Component NfvManager as NfvMa
+  () "gRPC" as grpc
+  Component [PhysicalDevice\nManager] as PhyMa
+}
+
+Component [Open Baton] as ob
+
+rectangle "Federated Testbeds" {
+  Rectangle [Fokus\nOpenstack] as fokus
+  Rectangle [Surrey\nOpenstack] as uos
+  Rectangle [Ericsson\nOpenstack] as er
+  Rectangle [ADS\nOpenstack] as ads
+  Rectangle [DT\nOpenstack] as dt
+}
+
+U .down.> rest
+EM -up- rest : exposes
+EM -down- grpc
+
+MoMa -up- grpc
+SdMa -up- grpc
+SecMa -up- grpc
+NfvMa -up- grpc
+PhyMa -up- grpc
+
+NfvMa -down-> napi
+SecMa -down-> napi
+ob -up- napi : exposes
+ob -down- vim
+fokus -up- vim
+ads -up- vim
+dt -up- vim
+er -up- vim
+uos -up- vim
+
+@enduml
