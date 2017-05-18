@@ -1,35 +1,95 @@
 @startuml
 skinparam monochrome true
 autonumber "<b>(<u>##</u>)"
+
 actor User as U
+
 participant "Web Portal" as A
-participant "Experiment Manager" as B
-participant "X-Resource Manager" as C
-participant "Y-Resource Manager" as D
 
-activate U
+participant "Experiment Manager" as EM
+
+participant "X-Resource Manager" as X
+participant "Y-Resource Manager" as Y
+
+||30||
+group Register User
+
 activate A
-activate B
 
-U -> A : register experiment
-A -> B : create certificate
-B -> A : return certificate
+U -> A : win experiment
+A -> EM : create user
+activate EM
+EM -> X : create user info
+activate X
+EM -> Y : create user info
+activate Y
+X -> EM : response
+deactivate X
+Y -> EM : response
+deactivate Y
+
+EM -> EM : create certificate
+
+EM -> A : return user info \n(certificate)
+deactivate EM
 A -> U : return certificate
-
-group Experiment Definition
-activate C
-activate D
-
-U -> B : reserve resources
-B -> C : reserve specific resource
-B -> D : reserve specific resource
-C -> B : response
-D -> B : response
-B -> U : resources reserved
-U -> B : execute experiment 
-B -> C : reserve specific resource
-B -> D : reserve specific resource
 
 end
 
+||30||
+
+group Resource Reservation
+
+||10||
+U -> EM : reserve resources
+activate EM
+||35||
+EM -> EM : book resources
+||35||
+EM -> U : resources \nreserved
+deactivate EM
+||10||
+end
+
+||30||
+
+group Experiment Execution
+||10||
+
+U -> EM : execute \nexperiment
+activate EM
+EM -> X : deploy specific resource
+activate X
+EM -> Y : deploy specific resource
+activate Y
+X -> EM : response
+deactivate X
+Y -> EM : response
+deactivate Y
+EM -> U : return \nexperiment \ndefinition
+deactivate EM
+
+||10||
+end
+
+||30||
+
+group Experiment Termination
+||10||
+
+U -> EM : terminate \nexperiment
+activate EM
+EM -> X : terminate specific resource
+activate X
+EM -> Y : terminate specific resource
+activate Y
+X -> EM : response
+deactivate X
+Y -> EM : response
+deactivate Y
+EM -> U : return \nresponse
+deactivate EM
+
+||30||
+end
 @enduml
