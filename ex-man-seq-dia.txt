@@ -1,0 +1,35 @@
+@startuml
+skinparam monochrome true
+autonumber "<b>(<u>##</u>)"
+actor User as U
+participant "Web Portal" as A
+participant "Experiment Manager" as B
+participant "X-Resource Manager" as C
+participant "Y-Resource Manager" as D
+
+activate U
+activate A
+activate B
+
+U -> A : register experiment
+A -> B : create certificate
+B -> A : return certificate
+A -> U : return certificate
+
+group Experiment Definition
+activate C
+activate D
+
+U -> B : reserve resources
+B -> C : reserve specific resource
+B -> D : reserve specific resource
+C -> B : response
+D -> B : response
+B -> U : resources reserved
+U -> B : execute experiment 
+B -> C : reserve specific resource
+B -> D : reserve specific resource
+
+end
+
+@enduml
