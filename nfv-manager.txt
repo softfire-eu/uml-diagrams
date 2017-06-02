@@ -1,0 +1,81 @@
+@startuml
+skinparam monochrome true
+autonumber "<b>(<u>##</u>)"
+
+participant "Experiment Manager" as em
+participant "NFV Manager" as nfv
+collections "Openstacks" as os
+participant "Open Baton" as ob
+
+[-> em : create_user
+em -> nfv : create_user
+activate nfv
+nfv -> os : create_projects
+activate os
+os -> nfv : return
+deactivate os
+
+nfv -> ob : create_project
+activate ob
+ob -> nfv : return
+deactivate ob
+
+nfv -> ob : create_user
+activate ob
+ob -> nfv : return
+deactivate ob
+
+nfv -> ob : onboard vim
+activate ob
+ob -> nfv : return
+deactivate ob
+
+nfv -> em : return
+deactivate nfv
+
+[<- em : return
+
+
+||40||
+[-> em : reserve_resources
+em -> nfv : validate_resources
+activate nfv
+nfv -> nfv : validate_resource
+em <- nfv : return
+deactivate nfv
+[<- em : return
+
+||40||
+[-> em : provision_resources
+em -> nfv : provision_resources
+activate nfv
+nfv --> ob : upload_packages
+activate ob
+nfv -> ob : upload_nsd
+nfv -> ob : deploy_nsr
+nfv <- ob : return
+
+deactivate ob
+em <- nfv : return
+[<- em : return
+nfv --> ob : check_status
+nfv --> em : update_status
+nfv --> ob : check_status
+nfv --> em : update_status
+nfv --> ob : check_status
+deactivate nfv
+
+||40||
+
+[-> em : terminate_resources
+em -> nfv : terminate_resources
+activate nfv
+nfv -> ob : terminate_nsr
+activate ob
+nfv -> ob : delete_nsd
+nfv <- ob : return
+deactivate ob
+em <- nfv : return
+deactivate nfv
+[<- em : return
+@enduml

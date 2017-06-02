@@ -24,7 +24,7 @@ EM -> SM : create user info
 activate SM
 SM --> EM : response
 deactivate SM
-EM -->[ 
+EM -->[
 deactivate EM
 
 end
@@ -39,10 +39,9 @@ EM -> SM
 activate SM
 SM -> p1 : /SDNproxySetup (token,tenant-id)
 activate p1
-activate OSDNC
+
 
 SM -> p2 : /SDNproxySetup (token,tenant-id)
-activate ODL
 activate p2
 
 p1 --> SM : (API-URL, user-flow-tables)
@@ -63,8 +62,29 @@ group SDN usage
 U -> p1 : POST /api (token, JSON-RPC(flow-table))
 activate p1
 p1 -> OSDNC: POST / (JSON-RCP(flow-table))
-
+activate OSDNC
+||25||
 OSDNC --> p1
+deactivate OSDNC
+p1 --> U : result
+deactivate p1
+
+||10||
+U -> p1 : POST /api (JSON-RPC(flow-table))
+activate p1
+
+p1 --> U : 403 Unauthorized
+destroy p1
+
+||10||
+
+U -> p1 : POST /api (token, JSON-RPC(flow-table))
+activate p1
+p1 -> OSDNC: POST / (JSON-RCP(flow-table))
+activate OSDNC
+||25||
+OSDNC --> p1
+deactivate OSDNC
 p1 --> U : result
 deactivate p1
 end
@@ -85,7 +105,7 @@ activate p2
 
 p1 --> SM
 deactivate p1
-deactivate OSDNC
+
 
 p2 --> SM
 deactivate p2
