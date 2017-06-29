@@ -7,7 +7,6 @@ actor User as U
 participant "Web Portal" as A
 
 participant "Experiment Manager" as EM
-
 participant "X-Resource Manager" as X
 participant "Y-Resource Manager" as Y
 
@@ -34,6 +33,7 @@ EM -> A : return user info \n(certificate)
 deactivate EM
 A -> U : return certificate
 
+deactivate A
 end
 
 ||30||
@@ -43,9 +43,17 @@ group Resource Reservation
 ||10||
 U -> EM : reserve resources
 activate EM
-||35||
+
+EM -> X : validate resource
+activate X
+EM -> Y : validate resource
+activate Y
+X -> EM : response
+deactivate X
+Y -> EM : response
+deactivate Y
+
 EM -> EM : book resources
-||35||
 EM -> U : resources \nreserved
 deactivate EM
 ||10||
