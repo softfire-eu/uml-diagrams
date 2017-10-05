@@ -1,0 +1,67 @@
+@startuml
+skinparam monochrome true
+autonumber "<b>(<u>##</u>)"
+
+actor User as U
+
+participant "Experiment Manager" as EM
+participant "NFV-Resource Manager" as nfv
+participant "Open Baton" as ob
+participant "Exp. Service" as exp
+
+group Experiment Execution
+||10||
+
+ob <- exp : register for "instantiate finish" \nand for "terminate resources"
+
+U -> EM : execute \nexperiment
+activate EM
+EM -> nfv : deploy nfv resource
+activate nfv
+nfv -> ob : deploy Network Service
+activate ob
+nfv -> EM : response
+deactivate nfv
+
+ob -> exp : event "instantiate finish"
+activate exp
+ob -> nfv : status
+deactivate ob
+EM -> U : return \nexperiment \ndefinition
+deactivate EM
+||10||
+end
+||10||
+ob <- exp : Get NSR status
+note right
+  The Experiment Service
+  starts executing his logic,
+  it can also trigger the
+  Open Baton API using the
+  NFVO SDK on his own project
+end note
+ob <- exp : Scale Out VNFR
+
+||30||
+
+group Experiment Termination
+||10||
+
+U -> EM : terminate \nexperiment
+activate EM
+EM -> nfv : terminate nfv resource
+activate nfv
+nfv -> ob : terminate NSR
+activate ob
+nfv -> EM : response
+deactivate nfv
+ob -> exp : event "terminate resources"
+deactivate exp
+ob -> nfv : response
+deactivate ob
+EM -> U : return \nresponse
+deactivate EM
+
+||30||
+end
+@enduml
