@@ -22,6 +22,11 @@ EM <-[ : Register User
 activate EM
 EM -> SM : create user info
 activate SM
+SM -> p1 : /PrepareTenant (tenant-id)
+activate p1
+p1 --> SM : (flow-table-offset)
+deactivate p1
+
 SM --> EM : response
 deactivate SM
 EM -->[
