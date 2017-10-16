@@ -36,6 +36,22 @@ end
 
 ||30||
 
+group Validate Resources
+
+EM <-[ : ...
+activate EM
+EM -> SM : validate resource
+activate SM
+
+SM --> EM :
+deactivate SM
+||10||
+deactivate EM
+
+end
+
+||30||
+
 group Provide Resources
 
 EM <-[ : ...
@@ -51,7 +67,7 @@ activate p2
 
 p1 --> SM : (API-URL, user-flow-tables)
 deactivate p1
-p2 --> SM : (user-flow-tables, ??)
+p2 --> SM : (API-URL, user-flow-tables)
 deactivate p2
 SM --> EM
 deactivate SM
